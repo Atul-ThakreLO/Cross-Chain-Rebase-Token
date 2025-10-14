@@ -59,7 +59,6 @@ contract Vault {
     event Deposit(address indexed user, uint256 indexed amount);
     event Redeemed(address indexed user, uint256 indexed amount);
 
-
     constructor(IRebaseToken _rebaseTokenAddress) {
         i_rebaseToken = _rebaseTokenAddress;
     }
@@ -72,7 +71,7 @@ contract Vault {
     /**
      * @notice Allow a user to deposite ETH and recieve an equivalent amount of RebaseToken
      *  @dev The amount of ETH sent with transaction (msg.value) determines the amount of tokens minted.
-     * Assumes 1:1 peg for ETH to RebaseToken for simplicity in this version. 
+     * Assumes 1:1 peg for ETH to RebaseToken for simplicity in this version.
      */
     function deposit() public payable {
         // The amount of ETH sent is msg.value
@@ -88,7 +87,7 @@ contract Vault {
     }
 
     /**
-     * @notice Alllow user to burn their RebaseToken an recieve corresponding amount of ETH. 
+     * @notice Alllow user to burn their RebaseToken an recieve corresponding amount of ETH.
      * @param _amount The amount of token need to burn.
      * @dev Follow CEI (Check-Effect-Interaction), uses low level .call for ETH transfer.
      */
@@ -100,10 +99,10 @@ contract Vault {
         i_rebaseToken.burn(msg.sender, _amount);
 
         // Interaction
-        (bool success, ) = payable(msg.sender).call{value: _amount}("");
+        (bool success,) = payable(msg.sender).call{value: _amount}("");
 
         // Checks
-        if(!success) {
+        if (!success) {
             revert Vault__RedeemFailed();
         }
 

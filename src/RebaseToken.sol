@@ -28,7 +28,6 @@ pragma solidity ^0.8.19;
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
-import {console} from "forge-std/Test.sol";
 
 /**
  * @title Rebase Token
@@ -39,7 +38,6 @@ contract RebaseToken is ERC20, Ownable, AccessControl {
     ////////////////////////////////////////////////////////////
     ////////////////////////// Errors //////////////////////////
     ////////////////////////////////////////////////////////////
-
     error ReabaseToken__InterestCanOnlyBeDecrease(uint256 newRate, uint256 oldRate);
 
     ////////////////////////////////////////////////////////////
@@ -54,8 +52,11 @@ contract RebaseToken is ERC20, Ownable, AccessControl {
     ////////////////////////////////////////////////////////////
     ////////////////////////// Events //////////////////////////
     ////////////////////////////////////////////////////////////
-
     event InterestRateSet(uint256 indexed newInterestRate);
+
+    ////////////////////////////////////////////////////////////
+    //////////////////////// Functions /////////////////////////
+    ////////////////////////////////////////////////////////////
 
     constructor() ERC20("Rebase Token", "RBT") Ownable(msg.sender) {}
 
@@ -71,13 +72,13 @@ contract RebaseToken is ERC20, Ownable, AccessControl {
         emit InterestRateSet(_newInterestRate);
     }
 
-    function mint(address _to, uint256 _amount) external {
+    function mint(address _to, uint256 _amount) external onlyRole(MINT_BURN_ACCESS) {
         _mintAccuredInterest(_to);
         s_userInterestRate[_to] = s_interestRate;
         _mint(_to, _amount);
     }
 
-    function burn(address _from, uint256 _amount) external {
+    function burn(address _from, uint256 _amount) external onlyRole(MINT_BURN_ACCESS)  {
         // if (_amount == type(uint256).max) {
         //     _amount = balanceOf(_from);
         //     console.log("inside amount", _amount);
@@ -89,6 +90,7 @@ contract RebaseToken is ERC20, Ownable, AccessControl {
     function balanceOf(address _user) public view override returns (uint256) {
         return (super.balanceOf(_user) * _calculateUserAccumulatedInterestsSinceLastUpdated(_user)) / PRICISION_FACTOR;
     }
+
 
     /**
      * @notice Transfers tokens from the caller to a recipient.
@@ -114,6 +116,7 @@ contract RebaseToken is ERC20, Ownable, AccessControl {
         return super.transfer(_recipient, _amount);
     }
 
+
     /**
      * @notice Transfers tokens from one address to another, on behalf of the sender,
      * provided an allowance is in place.
@@ -136,6 +139,7 @@ contract RebaseToken is ERC20, Ownable, AccessControl {
         return super.transferFrom(_sender, _recipient, _amount);
     }
 
+
     /**
      * @notice Gets the principle balance of a user (tokens actually minted to them), excluding any accrued interest.
      * @param _user The address of the user.
@@ -144,6 +148,7 @@ contract RebaseToken is ERC20, Ownable, AccessControl {
     function principleBalanceOf(address _user) public view returns (uint256) {
         return super.balanceOf(_user);
     }
+
 
     /**
      * @param _user The address of user whose interest is minting.
@@ -161,6 +166,7 @@ contract RebaseToken is ERC20, Ownable, AccessControl {
         s_userLastUpdatedTimestamp[_user] = block.timestamp;
         _mint(_user, interestTokenToMint);
     }
+
 
     /**
      *
@@ -185,6 +191,7 @@ contract RebaseToken is ERC20, Ownable, AccessControl {
     function getUserInterestRate(address _user) public view returns (uint256) {
         return s_userInterestRate[_user];
     }
+
 
     /**
      * @notice Gets the current global interest rate for the token.
