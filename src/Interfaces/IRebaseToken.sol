@@ -8,7 +8,7 @@ interface IRebaseToken {
      * @param _to Address to mint token.
      * @param _amount Amount of token to mint.
      */
-    function mint(address _to, uint256 _amount) external;
+    function mint(address _to, uint256 _amount, uint256 _userInterestRate) external;
 
     /**
      * @notice Burns the token from specified address.
@@ -18,4 +18,8 @@ interface IRebaseToken {
     function burn(address _from, uint256 _amount) external;
 
     function balanceOf(address _user) external view returns (uint256);
+
+    function getUserInterestRate(address _user) external view returns (uint256);
+
+    function getInterestRate() external view returns (uint256);
 }

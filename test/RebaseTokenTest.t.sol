@@ -107,7 +107,6 @@ contract RebaseTokenTest is Test {
         vm.prank(user);
         vault.deposit{value: amount}();
 
-
         uint256 userBalance = rebaseToken.balanceOf(user);
         uint256 user2Balance = rebaseToken.balanceOf(user2);
 
@@ -141,7 +140,7 @@ contract RebaseTokenTest is Test {
     function testCannotCallMintAndBurn() public {
         vm.startPrank(user);
         vm.expectPartialRevert(bytes4(IAccessControl.AccessControlUnauthorizedAccount.selector));
-        rebaseToken.mint(user, 100);
+        rebaseToken.mint(user, 100, rebaseToken.getInterestRate());
         vm.expectPartialRevert(bytes4(IAccessControl.AccessControlUnauthorizedAccount.selector));
         rebaseToken.burn(user, 100);
         vm.stopPrank();
@@ -180,5 +179,4 @@ contract RebaseTokenTest is Test {
         vm.expectPartialRevert(bytes4(Ownable.OwnableUnauthorizedAccount.selector));
         rebaseToken.grantMintAndBurnAccess(user);
     }
-
 }

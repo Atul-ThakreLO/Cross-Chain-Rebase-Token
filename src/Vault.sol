@@ -81,7 +81,9 @@ contract Vault {
             revert Vault__AmountNeedToBeMoreThanZero();
         }
 
-        i_rebaseToken.mint(msg.sender, amountValue);
+        uint256 interestRate = i_rebaseToken.getInterestRate();
+
+        i_rebaseToken.mint(msg.sender, amountValue, interestRate);
 
         emit Deposit(msg.sender, amountValue);
     }
