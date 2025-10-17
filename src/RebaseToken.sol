@@ -176,6 +176,10 @@ contract RebaseToken is ERC20, Ownable, AccessControl {
         view
         returns (uint256 lineraInterest)
     {
+        // If user has never been updated, no interest has accrued
+        // if (s_userLastUpdatedTimestamp[_user] == 0) {
+        //     return PRICISION_FACTOR;
+        // }
         uint256 timeElapsed = block.timestamp - s_userLastUpdatedTimestamp[_user];
         lineraInterest = PRICISION_FACTOR + (timeElapsed * s_userInterestRate[_user]);
     }
