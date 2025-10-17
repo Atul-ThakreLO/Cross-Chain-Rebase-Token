@@ -91,9 +91,7 @@ contract CrossChainTest is Test {
         RegistryModuleOwnerCustom(arbSepoliaNetworkDetails.registryModuleOwnerCustomAddress).registerAdminViaOwner(
             address(arbSepoliaToken)
         );
-        TokenAdminRegistry(arbSepoliaNetworkDetails.tokenAdminRegistryAddress).acceptAdminRole(
-            address(arbSepoliaToken)
-        );
+        TokenAdminRegistry(arbSepoliaNetworkDetails.tokenAdminRegistryAddress).acceptAdminRole(address(arbSepoliaToken));
         TokenAdminRegistry(arbSepoliaNetworkDetails.tokenAdminRegistryAddress).setPool(
             address(arbSepoliaToken), address(arbSepoliaTokenPool)
         );
@@ -163,7 +161,7 @@ contract CrossChainTest is Test {
             receiver: abi.encode(user),
             data: "",
             tokenAmounts: tokenAmounts,
-            feeToken: loaclNetworkDetails.linkAddress,
+            feeToken: loaclNetworkDetails.linkAddress, // LInk Token address use, address(0) for native token.
             extraArgs: Client._argsToBytes(
                 Client.EVMExtraArgsV2({gasLimit: 200_000, allowOutOfOrderExecution: false}) // This will set default gass limit
             )
@@ -189,6 +187,7 @@ contract CrossChainTest is Test {
         uint256 localBalanceBefore = loaclToken.balanceOf(user);
 
         // 8. Send the CCIP message
+        /// @notice Here we haven't use {msg.value} because we are using Link token, if we are using native token to pay the we must use {msg.value}
         vm.prank(user);
         IRouterClient(loaclNetworkDetails.routerAddress).ccipSend(remoteNetworkDetails.chainSelector, message);
 
@@ -213,9 +212,7 @@ contract CrossChainTest is Test {
         // 13. Get the user's balance on remote chain After message processing
         uint256 remoteBlanaceAfter = remoteToken.balanceOf(user);
 
-        assertEq(
-            remoteBlanaceAfter, remoteBalanceBefore + amountTobridge
-        );
+        assertEq(remoteBlanaceAfter, remoteBalanceBefore + amountTobridge);
 
         // 14. Check interest rates (specific to RebaseToken logic)
         vm.selectFork(localFork);
