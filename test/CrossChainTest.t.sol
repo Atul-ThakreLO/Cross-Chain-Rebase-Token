@@ -228,7 +228,28 @@ contract CrossChainTest is Test {
     ////////////////////////// Tests ///////////////////////////
     ////////////////////////////////////////////////////////////
 
-    function testBridgeAllToken() public {
+    function testBridgeAllTokenToDestination() public {
+        vm.selectFork(sepoliaFork);
+        vm.deal(user, 1e5);
+        vm.prank(user);
+        Vault(payable(address(vault))).deposit{value: SEND_AMOUNT}();
+        bridgeToken(
+            SEND_AMOUNT,
+            sepoliaFork,
+            arbSepoliaFork,
+            sepoliaNetworkDetails,
+            arbSepoliaNetworkDetails,
+            sepoliaToken,
+            arbSepoliaToken
+        );
+
+        vm.selectFork(arbSepoliaFork);
+        uint256 balanceArb = arbSepoliaToken.balanceOf(user);
+        console.log("balance", balanceArb);
+        assertGt(balanceArb, 0);
+    }
+
+    function testBridgeAllTokenBack() public {
         vm.selectFork(sepoliaFork);
         vm.deal(user, SEND_AMOUNT);
         vm.prank(user);
@@ -256,5 +277,57 @@ contract CrossChainTest is Test {
             arbSepoliaToken,
             sepoliaToken
         );
+    }
+
+    function testBridgeSomeTokenBackForth() public {
+        vm.selectFork(sepoliaFork);
+        vm.deal(user, 1e10);
+        vm.prank(user);
+        Vault(payable(address(vault))).deposit{value: SEND_AMOUNT}();
+
+        vm.selectFork(arbSepoliaFork);
+        vm.deal(user, 1e10);
+        vm.prank(owner);
+        arbSepoliaToken.grantMintAndBurnAccess(user);
+        uint256 interestRateOnSepolia = arbSepoliaToken.getInterestRate();
+        vm.prank(user);
+        arbSepoliaToken.mint(user, SEND_AMOUNT, interestRateOnSepolia);
+        // uint256 principalBalanceBeforeBridgeArb = arbSepoliaToken.principleBalanceOf(user);
+
+        vm.selectFork(sepoliaFork);
+        bridgeToken(
+            1e3,
+            sepoliaFork,
+            arbSepoliaFork,
+            sepoliaNetworkDetails,
+            arbSepoliaNetworkDetails,
+            sepoliaToken,
+            arbSepoliaToken
+        );
+
+        vm.warp(block.timestamp + 10 minutes);
+
+        vm.selectFork(arbSepoliaFork);
+        bridgeToken(
+            SEND_AMOUNT,
+            arbSepoliaFork,
+            sepoliaFork,
+            arbSepoliaNetworkDetails,
+            sepoliaNetworkDetails,
+            arbSepoliaToken,
+            sepoliaToken
+        );
+
+        // vm.warp(block.timestamp + 30 minutes);
+
+        vm.selectFork(sepoliaFork);
+        uint256 balanceOfSepoliaAfterBridgeArbToSep = sepoliaToken.balanceOf(user);
+
+        vm.selectFork(arbSepoliaFork);
+        uint256 balanceOfArbAfterBridgeArbToSep = arbSepoliaToken.principleBalanceOf(user);
+        // console.log(balanceOfSepoliaAfterBridgeArbToSep);
+        console.log(balanceOfArbAfterBridgeArbToSep, balanceOfSepoliaAfterBridgeArbToSep);
+        // console.log(principalBalanceBeforeBridgeArb, principalBalanceAfterBridgeArb, balanceAfterBridgeArb);
+        // assertEq(principalBalanceAfterBridgeArb, principalBalanceBeforeBridgeArb + 1e3);
     }
 }

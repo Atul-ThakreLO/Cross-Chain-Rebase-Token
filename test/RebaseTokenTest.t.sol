@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.19;
 
-import {Test} from "forge-std/Test.sol";
+import {Test, console} from "forge-std/Test.sol";
 import {RebaseToken} from "../src/RebaseToken.sol";
 import {IRebaseToken} from "../src/Interfaces/IRebaseToken.sol";
 import {Vault} from "../src/Vault.sol";
@@ -14,7 +14,7 @@ contract RebaseTokenTest is Test {
     Vault private vault;
 
     address public owner = makeAddr("owner");
-    address public user = makeAddr("user");
+    address public user = makeAddr("userTest");
 
     function setUp() public {
         vm.startPrank(owner);
@@ -139,9 +139,11 @@ contract RebaseTokenTest is Test {
 
     function testCannotCallMintAndBurn() public {
         vm.startPrank(user);
+        uint256 interestRate = rebaseToken.getInterestRate();
         vm.expectPartialRevert(bytes4(IAccessControl.AccessControlUnauthorizedAccount.selector));
-        rebaseToken.mint(user, 100, rebaseToken.getInterestRate());
+        rebaseToken.mint(user, 100, interestRate);
         vm.expectPartialRevert(bytes4(IAccessControl.AccessControlUnauthorizedAccount.selector));
+        // vm.expectRevert(IAccessControl.AccessControlUnauthorizedAccount.selector);
         rebaseToken.burn(user, 100);
         vm.stopPrank();
     }

@@ -15,7 +15,7 @@ A Solidity-based rebase token with cross-chain capabilities using Chainlink CCIP
 - [Security Considerations](#security-considerations)
 - [License](#license)
 
-## 🎯 Overview
+## Overview
 
 The Cross-Chain Rebase Token is a decentralized, crypto-collateralized token that automatically increases in value over time through a linear interest mechanism. Built with Foundry and leveraging Chainlink's CCIP technology, it enables seamless cross-chain transfers while preserving user-specific interest rates.
 
@@ -26,7 +26,7 @@ The Cross-Chain Rebase Token is a decentralized, crypto-collateralized token tha
 - **Collateral**: ETH (1:1 peg)
 - **Interest Model**: Linear time-based accrual
 
-## ✨ Features
+## Features
 
 ### Core Functionality
 
@@ -48,20 +48,20 @@ The Cross-Chain Rebase Token is a decentralized, crypto-collateralized token tha
 - **Principle Balance Tracking**: Separate tracking of base balance vs. accrued interest
 - **Comprehensive Testing**: Fuzz testing with Foundry
 
-## 🏗️ Architecture
+## Architecture
 
 ### System Components
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                     Chain A                                  │
-│  ┌─────────────┐      ┌──────────────┐                     │
-│  │   Vault     │──────│ RebaseToken  │                     │
-│  └─────────────┘      └──────────────┘                     │
+│                     Chain A                                 │
+│  ┌─────────────┐      ┌──────────────┐                      │
+│  │   Vault     │──────│ RebaseToken  │                      │
+│  └─────────────┘      └──────────────┘                      │
 │         │                     │                             │
 │         │                     │                             │
-│         └─────────────────────┴─────────────────┐          │
-│                                                   │          │
+│         └─────────────────────┴─────────────────┐           │
+│                                                   │         │
 │                                    ┌──────────────┴────────┐│
 │                                    │ RebaseTokenPool       ││
 │                                    │ (CCIP Integration)    ││
@@ -71,19 +71,19 @@ The Cross-Chain Rebase Token is a decentralized, crypto-collateralized token tha
                                          Chainlink CCIP
                                                     │
 ┌───────────────────────────────────────────────────┼─────────┐
-│                     Chain B                       │          │
+│                     Chain B                       │         │
 │                                    ┌──────────────┴────────┐│
 │                                    │ RebaseTokenPool       ││
 │                                    │ (CCIP Integration)    ││
 │                                    └──────────────┬────────┘│
-│                                                   │          │
-│  ┌─────────────┐      ┌──────────────┐          │          │
-│  │   Vault     │──────│ RebaseToken  │──────────┘          │
-│  └─────────────┘      └──────────────┘                     │
+│                                                   │         │
+│  ┌─────────────┐      ┌──────────────┐          │           │
+│  │   Vault     │──────│ RebaseToken  │──────────┘           │
+│  └─────────────┘      └──────────────┘                      │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-## 📝 Smart Contracts
+## Smart Contracts
 
 ### 1. RebaseToken.sol
 
@@ -128,7 +128,7 @@ Chainlink CCIP integration for cross-chain transfers.
 
 - `IRebaseToken.sol`: Interface for RebaseToken interactions
 
-## 🚀 Installation
+## Installation
 
 ### Prerequisites
 
@@ -155,7 +155,7 @@ forge build
 - Chainlink CCIP Contracts
 - Forge Standard Library
 
-## 💻 Usage
+## Usage
 
 ### Build
 
@@ -209,7 +209,7 @@ Start a local Anvil node:
 anvil
 ```
 
-## 🧪 Testing
+## Testing
 
 The project includes comprehensive test coverage with fuzz testing:
 
@@ -244,7 +244,33 @@ forge test --match-path test/RebaseTokenTest.t.sol
 forge coverage
 ```
 
-## 🚢 Deployment
+## Deployment
+
+### Cross-Chain Deployment Checklist
+
+## Sepolia Deployment
+- [ ] Run TokenAndPoolDeployer
+- [ ] Record token address: ___________
+- [ ] Record pool address: ___________
+- [ ] Verify on Etherscan
+- [ ] Test mint/burn locally
+
+## Arbitrum Sepolia Deployment
+- [ ] Run TokenAndPoolDeployer
+- [ ] Record token address: ___________
+- [ ] Record pool address: ___________
+- [ ] Verify on Arbiscan
+
+## Pool Configuration
+- [ ] Configure Sepolia pool with Arbitrum details
+- [ ] Configure Arbitrum pool with Sepolia details
+- [ ] Verify rate limiters
+
+## Bridge Test
+- [ ] Fund account with LINK
+- [ ] Approve tokens
+- [ ] Send test bridge transaction
+- [ ] Verify receipt on destination
 
 ### Deployment Scripts
 
@@ -284,7 +310,7 @@ ETHERSCAN_API_KEY=your_etherscan_api_key
 ARBISCAN_API_KEY=your_arbiscan_api_key
 ```
 
-## 🔒 Security Considerations
+## Security Considerations
 
 ### Access Control
 
@@ -311,7 +337,7 @@ ARBISCAN_API_KEY=your_arbiscan_api_key
 
 ⚠️ **This code has not been audited. Use at your own risk in production environments.**
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 - **Solidity**: ^0.8.19
 - **Foundry**: Smart contract development framework
@@ -319,7 +345,7 @@ ARBISCAN_API_KEY=your_arbiscan_api_key
 - **Chainlink CCIP**: Cross-chain interoperability
 - **Forge Std**: Testing utilities
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 

@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.19;
 
-import {Script} from "forge-std/Script.sol";
+import {Script, console} from "forge-std/Script.sol";
 import {Vault} from "../src/Vault.sol";
 import {IRebaseToken} from "../src/Interfaces/IRebaseToken.sol";
 import {RebaseToken} from "../src/RebaseToken.sol";
@@ -11,16 +11,23 @@ import {CCIPLocalSimulatorFork, Register} from "chainlink-local/ccip/CCIPLocalSi
 import {IERC20} from "ccip/contracts/src/v0.8/vendor/openzeppelin-solidity/v4.8.3/contracts/token/ERC20/IERC20.sol";
 import {RegistryModuleOwnerCustom} from "ccip/contracts/src/v0.8/ccip/tokenAdminRegistry/RegistryModuleOwnerCustom.sol";
 import {TokenAdminRegistry} from "ccip/contracts/src/v0.8/ccip/tokenAdminRegistry/TokenAdminRegistry.sol";
+import {HelperConfig} from "./Helper/HelperConfig.s.sol";
 
 contract TokenAndPoolDeployer is Script {
     function run() public returns (RebaseToken rebaseToken, RebaseTokenPool rebaseTokenPool) {
-        CCIPLocalSimulatorFork ccipLocalSimulatorFork = new CCIPLocalSimulatorFork();
-        Register.NetworkDetails memory networkDetails = ccipLocalSimulatorFork.getNetworkDetails(block.chainid);
+        // CCIPLocalSimulatorFork ccipLocalSimulatorFork = new CCIPLocalSimulatorFork();
+        // Register.NetworkDetails memory networkDetails = ccipLocalSimulatorFork.getNetworkDetails(block.chainid);
+        HelperConfig helperConfig = new HelperConfig();
+        HelperConfig.NetworkConfig memory networkDetails = helperConfig.getConfig();
+
+        // console.log("Network details for ", block.chainid, "is - ", networkDetails);
         vm.startBroadcast();
         rebaseToken = new RebaseToken();
         rebaseTokenPool = new RebaseTokenPool(
             IERC20(address(rebaseToken)), new address[](0), networkDetails.rmnProxyAddress, networkDetails.routerAddress
         );
+        console.log("Rebase Token - ", address(rebaseToken));
+        console.log("Pool - ", address(rebaseTokenPool));
         rebaseToken.grantMintAndBurnAccess(address(rebaseTokenPool));
         RegistryModuleOwnerCustom(networkDetails.registryModuleOwnerCustomAddress).registerAdminViaOwner(
             address(rebaseToken)
@@ -30,6 +37,7 @@ contract TokenAndPoolDeployer is Script {
             address(rebaseToken), address(rebaseTokenPool)
         );
         vm.stopBroadcast();
+
     }
 }
 
