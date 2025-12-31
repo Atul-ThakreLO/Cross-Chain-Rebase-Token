@@ -169,7 +169,9 @@ contract RebaseToken is ERC20, Ownable, AccessControl {
      * @param _user The address of user
      * @notice So we set s_interestRate = 5e10 as we not deal with decimals so if divide it with 1e18, will gate
      * $0.00000005 -> in percents $0.000005
-     * (principle amount * interest rate * timeElapsed) /
+     * (principle amount * interest rate * timeElapsed)
+     * @return Here we are just returning the product of interest rate and time elapsed.
+     * The principal amount is considered in balanceOf function.
      */
     function _calculateUserAccumulatedInterestsSinceLastUpdated(address _user)
         internal
@@ -187,7 +189,10 @@ contract RebaseToken is ERC20, Ownable, AccessControl {
     ////////////////////////////////////////////////////////////
     ///////////////////////// Getters //////////////////////////
     ////////////////////////////////////////////////////////////
-
+    /**
+     * @param _user Address of user whose interest needed.
+     * @return  _ return the interest associated with address.
+     */
     function getUserInterestRate(address _user) public view returns (uint256) {
         return s_userInterestRate[_user];
     }
